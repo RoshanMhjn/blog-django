@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %} {% block content %}
+<h1>Blog Posts</h1>
+<a href="{% url 'blog:post_create' %}" class="btn btn-primary"
+  >Create New Post</a
+>
+<ul>
+  {% for post in posts %}
+  <li>{{ post.title }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

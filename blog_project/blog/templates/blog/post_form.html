@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %} 
+{% load crispy_forms_tags %} 
+
+
+
+{% block content%}
+<h1>Create a New Post</h1>
+<form method="post">
+  {% csrf_token %} 
+
+  {{ form|crispy:"bootstrap4" }}
+  <button type="submit">Create Post</button>
+</form>
+{% endblock %}
