@@ -1,11 +1,23 @@
-{% extends "base_generic.html" %} {% block content %}
-<h1>Blog Posts</h1>
-<a href="{% url 'blog:post_create' %}" class="btn btn-primary"
-  >Create New Post</a
->
-<ul>
-  {% for post in posts %}
-  <li>{{ post.title }}</li>
-  {% endfor %}
-</ul>
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-semibold mb-6">Blog Posts</h1>
+<a href="{% url 'blog:post_create' %}" class="btn btn-primary mb-6 inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+    Create New Post
+</a>
+
+<div class="post-grid">
+    {% for post in posts %}
+    <div class="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
+        <div class="p-4">
+            <h2 class="text-xl font-bold text-gray-900">{{ post.title }}</h2>
+            <p class="text-gray-700 mt-2">{{ post.description|truncatewords:20 }}</p>
+            <a href="{% url 'blog:post_detail' post.id %}" class="text-blue-500 hover:underline mt-4 inline-block">
+                Read more
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

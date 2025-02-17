@@ -81,3 +81,13 @@ footer p {
 .fade-in {
   animation: fadeIn 0.8s ease-out;
 }
+
+.post-image{
+  width: 400px;
+  height: 400px;
+}
+
+.post-grid{
+  display: grid;
+  grid-template-columns: repeat(1, 4fr);
+}
