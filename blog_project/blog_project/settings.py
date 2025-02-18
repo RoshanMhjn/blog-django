@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -147,7 +148,33 @@ ACCOUNT_FORMS = {"signup": "blog.forms.CustomSignupForm"}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = 'ea3fa6204e3e7b'
+EMAIL_HOST_PASSWORD = '2757c439c2ed1c'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = "blog@example.com"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+JAZZMIN_SETTINGS = {
+    'site title': 'Blog Admin Panel',
+    'site_header' : 'Blog Admin Panel',
+    'welcome_sign' : 'welcome to blog admin',
+    'show_sidebar' : True,
+    'navigation_expanded' : True,
+    'custom_links': {
+        'blog' : [
+            {
+                'name' : 'Dashboard',
+                'url' : '/admin/dashboard',
+                'icon': 'fas fa-chart-line',
+                'permissions' : ["auth.view_user"],
+            }
+        ]
+    }
+}

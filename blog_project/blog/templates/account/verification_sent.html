@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="mb-3 text-primary">Verify Your Email</h2>
+        <p class="lead">
+            We have sent a verification email to your inbox. Please check your email and click the verification link to activate your account.
+        </p>
+        <p>
+            If you don’t receive an email within a few minutes, check your spam folder.
+        </p>
+        <div class="mt-4">
+            <a href="/" class="btn btn-primary">Back to Home</a>
+            <a href="{% url 'account_login' %}" class="btn btn-secondary">Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

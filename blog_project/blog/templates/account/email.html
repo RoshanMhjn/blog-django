@@ -1,0 +1,60 @@
+{% extends "base_generic.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block head_title %}Email Addresses{% endblock head_title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Manage Email Addresses</h2>
+
+    {% if emailaddresses %}
+        <p class="text-muted">The following email addresses are associated with your account:</p>
+
+        <form method="post" action="{% url 'account_email' %}">
+            {% csrf_token %}
+            
+            <ul class="list-group mb-3">
+                {% for radio in emailaddress_radios %}
+                    {% with emailaddress=radio.emailaddress %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <input type="radio" name="email" value="{{ emailaddress.email }}" id="{{ radio.id }}" 
+                                    {% if radio.checked %}checked{% endif %} class="me-2">
+                                <label for="{{ radio.id }}">{{ emailaddress.email }}</label>
+
+                                {% if emailaddress.verified %}
+                                    <span class="badge bg-success ms-2">Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning ms-2">Unverified</span>
+                                {% endif %}
+
+                                {% if emailaddress.primary %}
+                                    <span class="badge bg-primary ms-2">Primary</span>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endwith %}
+                {% endfor %}
+            </ul>
+
+            <button type="submit" name="action_primary" class="btn btn-outline-primary me-2">Make Primary</button>
+            <button type="submit" name="action_send" class="btn btn-outline-warning me-2">Re-send Verification</button>
+            <button type="submit" name="action_remove" class="btn btn-outline-danger">Remove</button>
+        </form>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            No email addresses are associated with your account.
+        </div>
+    {% endif %}
+
+    {% if can_add_email %}
+        <h4 class="mt-4">Add Email Address</h4>
+        <form method="post" action="{% url 'account_email' %}">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" name="action_add" class="btn btn-success">Add Email</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
