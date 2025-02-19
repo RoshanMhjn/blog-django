@@ -1,14 +1,16 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
-from django.views.generic import ListView, CreateView, TemplateView
-from .models import Post
+from django.views.generic import ListView, CreateView, TemplateView, View, DetailView
+from .models import Post, Comment
 from django.urls import reverse_lazy
 from allauth.account.views import SignupView
-from .forms import CustomSignupForm, PostForm
-from django.views.generic import DetailView
+from .forms import CustomSignupForm, PostForm, CommentForm
+from django.views.generic import DetailView,UpdateView, DeleteView
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import Count
+from django.http import HttpResponseRedirect
+
 
 # Create your views here.
 
@@ -40,25 +42,66 @@ class PostDetailView(DetailView):
     template_name = 'blog/post_detail.html'
     context_object_name = 'post'
     
-class CustomDashboardView(TemplateView):
-    template_view = 'admin/dashboard.html'
+    def get(self, request, *args, **kwargs):
+ 
+        self.object = self.get_object()
+        self.object.views += 1
+        self.object.save()  
+        context = self.get_context_data(object=self.object)
+        
+        return self.render_to_response(context)
     
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(self, **kwargs)
-        total_users = User.objects.count()
-        total_blogs = Post.objects.count()
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all()
+        context['has_liked'] = self.request.user in self.object.likes.all()
         
-        last_six_months = timezone.now() - timezone.timedelta(days=180)
-        user_counts = User.objects.filter(date_joined__gte=last_six_months).values('date_joined__month').annotate(count=Count('id'))
-        blog_counts = Post.objects.filter(created_at__gte=last_six_months).values('created_at__month').annotate(count=Count('id'))
-
-        context.update({
-            'total_users': total_users,
-            'total_blogs': total_blogs,
-            'user_counts': user_counts,
-            'blog_counts': blog_counts,
-        })
-        
-        print("Context data:", context)
+        if self.request.user.is_authenticated:
+            context['form'] = CommentForm()
+        else:
+            context['form'] = None
         return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not request.user.is_authenticated:
+            return redirect('blog:post_detail', pk=self.object.pk)
+
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = self.object
+            comment.author = request.user
+            comment.save()
+            return redirect('blog:post_detail', pk=self.object.pk)
+
+        context = self.get_context_data(object=self.object)
+        context['form'] = form
+        return self.render_to_response(context)
+
+class CommentUpdateView(UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    
+    def get_success_url(self):
+         return reverse_lazy('blog:post_detail', kwargs={'pk': self.object.post.pk})
+    
+    def get_queryset(self):
+        return Comment.objects.filter(author=self.request.user)
+
+class CommentDeleteView(DeleteView):
+     def post(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id, author=request.user)
+        comment.delete()
+        return redirect(request.META.get('HTTP_REFERER', 'blog:post_list'))
+    
+class LikePostView(View):
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+        else:
+            post.likes.add(request.user)
         
+        return redirect('blog:post_detail', pk=post.id)
