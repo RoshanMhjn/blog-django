@@ -10,6 +10,9 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 
 # Create your views here.
@@ -22,7 +25,7 @@ class PostListView(ListView):
 class PostCreateView(CreateView):
     model = Post
     fields = ['title', 'content', 'image', 'tags']
-    template_name = 'blog/post_form.html'
+    template_name = 'blog/post_create.html'
     success_url = reverse_lazy('blog:post_list')
 
     def form_valid(self, form):
@@ -105,3 +108,34 @@ class LikePostView(View):
             post.likes.add(request.user)
         
         return redirect('blog:post_detail', pk=post.id)
+    
+class PostUpdateView(LoginRequiredMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    tempalte_name = "blog/post_form.html"
+    
+    def get_object(self, queryset=None):
+        post = super().get_object(queryset)
+        if self.request.user != post.author:
+            raise PermissionDenied
+        return post
+    
+    def get_success_url(self):
+        return reverse_lazy('blog:post_detail', kwargs={'pk': self.object.pk})
+
+class PostDeleteView(LoginRequiredMixin, DeleteView):
+    model = Post
+    success_url = reverse_lazy('blog:post_list')
+
+    def get_object(self, queryset=None):
+        post = super().get_object(queryset)
+        if self.request.user != post.author:
+            raise PermissionDenied
+        return post
+    
+    def get(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
+    def post(self, request, *args, **kwargs):
+        messages.success(request, "Post deleted successfully.")
+        return super().post(request, *args, **kwargs)

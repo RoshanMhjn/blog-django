@@ -22,6 +22,12 @@
         <img src="{{ post.image.url }}" class="img-fluid w-50 rounded shadow-sm" alt="{{ post.title }}">
     </div>
     
+    {% if request.user == post.author %}
+    <a href="{% url 'blog:post_edit' post.pk %}" class="btn btn-warning">
+        <i class="bi bi-pencil-square"></i> Edit
+    </a>
+    <button type="button" class="btn btn-danger" onclick="showDeleteToast()"><i class="bi bi-trash"></i>Delete </button>
+    {% endif %}
 
     <p class="mt-4">{{ post.content }}</p>
 
@@ -53,5 +59,27 @@
     </form>
 
     <a href="{% url 'blog:post_list' %}" class="btn btn-primary mt-4">← Back to Home</a>
+
+    <div id="deleteToast" class="toast position-fixed bottom-0 end-0 p-3" style="z-index: 5;" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Confirm Deletion</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Are you sure you want to delete this post?
+            <br>
+            <form id="delete-form" action="{% url 'blog:post_delete' post.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Yes, Delete</button>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+    function showDeleteToast() {
+        var toast = new bootstrap.Toast(document.getElementById('deleteToast'));
+        toast.show();
+    }
+</script>
 {% endblock %}
