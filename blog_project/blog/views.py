@@ -144,9 +144,10 @@ class PostSearchView(SearchView):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset
+        return queryset 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q') 
+        context['query'] = self.request.GET.get('q')
+        print (context) 
         return context
