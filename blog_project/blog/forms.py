@@ -3,6 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from .models import Post, Tag, Comment
+from tinymce.widgets import TinyMCE
 
 class CustomSignupForm(SignupForm):
     first_name = forms.CharField(max_length=30, required=True, label="First Name")
@@ -21,6 +22,7 @@ class PostForm(forms.ModelForm):
       widget = forms.CheckboxSelectMultiple,
       required = False
     )
+    content = forms.CharField(widget=TinyMCE(attrs={'cols':80, 'rows':30}))
     
     class Meta:
       model = Post

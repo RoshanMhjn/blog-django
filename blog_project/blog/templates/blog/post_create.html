@@ -1,8 +1,12 @@
 {% extends "base_generic.html" %} 
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block content %}
 <h1>Create a New Post</h1>
+
+
+
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
 

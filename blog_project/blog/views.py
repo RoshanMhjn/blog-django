@@ -6,13 +6,11 @@ from django.urls import reverse_lazy
 from allauth.account.views import SignupView
 from .forms import CustomSignupForm, PostForm, CommentForm
 from django.views.generic import DetailView,UpdateView, DeleteView
-from django.utils import timezone
-from django.contrib.auth.models import User
-from django.db.models import Count
-from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from haystack.generic_views import SearchView
+
 
 
 # Create your views here.
@@ -139,3 +137,16 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     def post(self, request, *args, **kwargs):
         messages.success(request, "Post deleted successfully.")
         return super().post(request, *args, **kwargs)
+
+
+class PostSearchView(SearchView):
+    template_name = 'blog/search_results.html'
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q') 
+        return context

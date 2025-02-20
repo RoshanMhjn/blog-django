@@ -1,5 +1,6 @@
-from django.urls import path
-from .views import PostListView, PostCreateView, CustomSignupView, PostDetailView,CommentUpdateView, CommentDeleteView, LikePostView, PostUpdateView, PostDeleteView
+from django.urls import path, include
+from .views import PostListView, PostCreateView, CustomSignupView, PostDetailView,CommentUpdateView, CommentDeleteView, LikePostView, PostUpdateView, PostDeleteView, PostSearchView
+from haystack.views import SearchView
 
 
 
@@ -15,5 +16,6 @@ urlpatterns = [
     path('post/<int:post_id>/like/', LikePostView.as_view(), name='like_post'),
     path('post/<int:pk>/edit/', PostUpdateView.as_view(), name='post_edit'),
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
-    
+    path('search/', PostSearchView.as_view(), name='post_search'),
+    path('tinymce/', include('tinymce.urls')),
 ]

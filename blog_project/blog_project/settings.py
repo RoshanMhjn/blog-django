@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'crispy_bootstrap4',
-    'blog',    
+    'blog',
+    'tinymce', 
+    'haystack',   
 ]
 
 MIDDLEWARE = [
@@ -177,4 +179,29 @@ JAZZMIN_SETTINGS = {
             }
         ]
     }
+}
+
+TINYMCE_DEFAULT_CONFIG = {
+    "height": "400px",
+    "width": "100%",
+    "menubar": "file edit view insert format tools table help",
+    "plugins": "advlist autolink lists link image charmap print preview anchor "
+               "searchreplace visualblocks code fullscreen "
+               "insertdatetime media table paste code help wordcount textcolor",
+    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft "
+               "aligncenter alignright alignjustify | outdent indent | numlist bullist checklist | forecolor "
+               "backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | "
+               "fullscreen preview save print | insertfile image media pageembed template link anchor codesample | "
+               "a11ycheck ltr rtl | showcomments addcomment code",
+    "fontsize_formats": "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+    "custom_undo_redo_levels": 10,
+    "language": "es_ES", 
+}
+
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    },
 }

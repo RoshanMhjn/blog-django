@@ -2,6 +2,5 @@ Django - 4.2.19
 django-allauth - 65.4.1
 django-crispy-forms - 2.3
 django-jazzmin - 3.0.1
-
-django-chartjs - 2.3.0
+django-tinymce - 4.1.0
 
